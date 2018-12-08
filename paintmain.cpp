@@ -18,6 +18,7 @@ int main()
 
 	char font[] = "12x24";
 	char text[] = "hello world";
+	int scale = 5;
 
 	gfx_open(width, height, "Paint");
 
@@ -31,7 +32,6 @@ int main()
 			int g = 255 * ((i >> 1) & 1);
 			int b = 255 * (i & 1);
 			gfx_color(r, g, b);
-			int scale = 5;
 
 			for (int index: paint.getCompressedColors(i)) {
 				int x = scale * (index % imageWidth),
@@ -42,6 +42,21 @@ int main()
 
 
 		c = gfx_wait();
+			
+		if (c == '='){
+			if (scale < 10){
+				scale = scale + 1;
+				gfx_clear();
+			}
+		}
+		
+		if (c == '-'){
+			if (scale >= 2){
+				scale = scale - 1;
+				gfx_clear();
+			}
+		}
+
 		gfx_flush();
 		if (c == 'q') break;
 	}
