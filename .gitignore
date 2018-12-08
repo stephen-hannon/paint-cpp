@@ -1,0 +1,5 @@
+*.swp
+*.o
+!gfx3.o
+paint
+
