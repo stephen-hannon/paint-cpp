@@ -7,7 +7,7 @@
 using namespace std;
 
 #include "paint.h"
-
+// changes
 Paint::Paint()
 {
 }
