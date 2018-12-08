@@ -10,6 +10,7 @@ int main()
 {
 	const int width = 800, height = 500;
 	char c;
+	int event;
 	Paint paint;
 
 	paint.loadImage("test2.ppm");
@@ -23,6 +24,13 @@ int main()
 	gfx_open(width, height, "Paint");
 
 	while (true) {
+		event = gfx_event_waiting();
+		if (!event) continue;
+
+		c = gfx_wait();
+		gfx_flush();
+		cout << c << event << endl;
+
 		gfx_color(255, 255, 255);
 		gfx_text(100, 50, text);
 
@@ -42,23 +50,23 @@ int main()
 
 
 		c = gfx_wait();
+		gfx_flush();
 			
-		if (c == '='){
+		if (c == 'q') {
+			break;
+		} else if (c == '='){
 			if (scale < 10){
 				scale = scale + 1;
 				gfx_clear();
 			}
-		}
-		
-		if (c == '-'){
+		} else if (c == '-'){
 			if (scale >= 2){
 				scale = scale - 1;
 				gfx_clear();
 			}
+		} else if (c == 1) {
+			paint.addPoint(gfx_xpos() / scale, gfx_ypos() / scale, 4, 1);
 		}
-
-		gfx_flush();
-		if (c == 'q') break;
 	}
 
 	return 0;

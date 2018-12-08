@@ -34,6 +34,12 @@ vector<int> Paint::getCompressedColors(int color)
 	return imageCompressed[color];
 }
 
+void Paint::addPoint(int x, int y, int color, int size)
+{
+	imageCompressed[color].push_back(y * imageWidth + x);
+	cout << y * imageWidth + x << endl;
+}
+
 int Paint::loadImage(string name)
 {
 	ifstream ifs (name);

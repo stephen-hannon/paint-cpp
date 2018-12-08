@@ -23,6 +23,7 @@ class Paint {
 		int getImageHeight();
 		Color getColor(int x, int y);
 		vector<int> getCompressedColors(int color);
+		void addPoint(int x, int y, int color, int size);
 		int loadImage(string name);
 		
 	private:
