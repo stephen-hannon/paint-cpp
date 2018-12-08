@@ -13,28 +13,32 @@ int main()
 	Paint paint;
 
 	paint.loadImage("test2.ppm");
+	int imageWidth = paint.getImageWidth();
+	int imageHeight = paint.getImageHeight();
 
 	char font[] = "12x24";
 	char text[] = "hello world";
 
 	gfx_open(width, height, "Paint");
 
-	//gfx_changefont(font);
-
 	while (true) {
 		gfx_color(255, 255, 255);
 		gfx_text(100, 50, text);
 
-		cout << "draw start" << endl;
-		for (int y = 0; y < paint.getImageHeight(); y++) {
-			for (int x = 0; x < paint.getImageWidth(); x++) {
-				int r, g, b;
-				Color color = paint.getColor(x, y);
-				gfx_color(color.r, color.g, color.b);
-				gfx_point(x, y);
+		// Draw every pixel for each of the 8 colors
+		for (int i = 0; i < 8; i++) {
+			int r = 255 * (i >> 2);
+			int g = 255 * ((i >> 1) & 1);
+			int b = 255 * (i & 1);
+			gfx_color(r, g, b);
+			int scale = 5;
+
+			for (int index: paint.getCompressedColors(i)) {
+				int x = scale * (index % imageWidth),
+					y = scale * (index / imageWidth);
+				gfx_fill_rectangle(x, y, scale, scale);
 			}
 		}
-		cout << "draw" << endl;
 
 
 		c = gfx_wait();

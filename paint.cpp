@@ -4,12 +4,14 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <array>
 using namespace std;
 
 #include "paint.h"
 
 Paint::Paint()
 {
+	imageCompressed.fill(vector<int>());
 }
 
 Paint::~Paint()
@@ -27,11 +29,15 @@ Color Paint::getColor(int x, int y)
 	return image[y * imageWidth + x];
 }
 
+vector<int> Paint::getCompressedColors(int color)
+{
+	return imageCompressed[color];
+}
+
 int Paint::loadImage(string name)
 {
 	ifstream ifs (name);
 
-	//cout << ifs.get() << endl;
 	if (ifs.get() != 'P') return 1;
 	if (ifs.get() != '3') return 1;
 
@@ -40,14 +46,28 @@ int Paint::loadImage(string name)
 
 	ifs >> bitsPerColor;
 
-	//unsigned char r, g, b;
+	int index = 0;
 	unsigned int r, g, b;
+	unsigned int compColor;
+	bool rc, gc, bc; // r, g, b compressed
 	while (ifs.peek() != EOF) {
 		ifs >> r >> g >> b;
+
+		rc = r >> 7;
+		gc = g >> 7;
+		bc = b >> 7;
+		compColor = rc;
+		compColor = (compColor << 1) | gc;
+		compColor = (compColor << 1) | bc;
+		//cout << compColor << endl;
+		
+		imageCompressed[compColor].push_back(index);
+
 		Color triplet = {r, g, b};
 		image.push_back(triplet);
 		//cout << r << ' ' << g << ' ' << b << endl;
 		ifs >> ws;
+		index++;
 	}
 	cout << "image loaded" << endl;
 }

@@ -1,12 +1,17 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <array>
 using namespace std;
 
 struct Color {
-	int r;
-	int g;
-	int b;
+	unsigned int r;
+	unsigned int g;
+	unsigned int b;
+};
+struct Point {
+	unsigned int x;
+	unsigned int y;
 };
 
 class Paint {
@@ -17,6 +22,7 @@ class Paint {
 		int getImageWidth();
 		int getImageHeight();
 		Color getColor(int x, int y);
+		vector<int> getCompressedColors(int color);
 		int loadImage(string name);
 		
 	private:
@@ -24,4 +30,5 @@ class Paint {
 		int imageHeight;
 		int bitsPerColor;
 		vector<Color> image;
+		array<vector<int>, 8> imageCompressed;
 };
