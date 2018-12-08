@@ -7,7 +7,7 @@
 using namespace std;
 
 #include "paint.h"
-// changes
+
 Paint::Paint()
 {
 }
@@ -46,7 +46,8 @@ int Paint::loadImage(string name)
 		ifs >> r >> g >> b;
 		Color triplet = {r, g, b};
 		image.push_back(triplet);
-		cout << r << ' ' << g << ' ' << b << endl;
+		//cout << r << ' ' << g << ' ' << b << endl;
 		ifs >> ws;
 	}
+	cout << "image loaded" << endl;
 }

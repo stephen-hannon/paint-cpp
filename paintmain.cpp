@@ -12,7 +12,7 @@ int main()
 	char c;
 	Paint paint;
 
-	paint.loadImage("test.ppm");
+	paint.loadImage("test2.ppm");
 
 	char font[] = "12x24";
 	char text[] = "hello world";
@@ -22,8 +22,10 @@ int main()
 	//gfx_changefont(font);
 
 	while (true) {
+		gfx_color(255, 255, 255);
 		gfx_text(100, 50, text);
 
+		cout << "draw start" << endl;
 		for (int y = 0; y < paint.getImageHeight(); y++) {
 			for (int x = 0; x < paint.getImageWidth(); x++) {
 				int r, g, b;
@@ -32,9 +34,12 @@ int main()
 				gfx_point(x, y);
 			}
 		}
+		cout << "draw" << endl;
 
 
-		if (gfx_wait() == 'q') break;
+		c = gfx_wait();
+		gfx_flush();
+		if (c == 'q') break;
 	}
 
 	return 0;
