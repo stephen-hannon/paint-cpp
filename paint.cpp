@@ -18,6 +18,12 @@ Paint::~Paint()
 { }
 
 
+void Paint::setInFilename(string name)
+{ inFilename = name; }
+
+void Paint::setOutFilename(string name)
+{ outFilename = name; }
+
 int Paint::getImageWidth()
 { return imageWidth; }
 
@@ -34,16 +40,27 @@ vector<int> Paint::getCompressedColors(int color)
 	return imageCompressed[color];
 }
 
+Color Paint::intToColor(unsigned int color)
+{
+	unsigned int r = 255 * (color >> 2);
+	unsigned int g = 255 * ((color >> 1) & 1);
+	unsigned int b = 255 * (color & 1);
+
+	return {r, g, b};
+}
+
 void Paint::addPoint(int x, int y, int color, int size)
 {
-	imageCompressed[color].push_back(y * imageWidth + x);
+	int address = y * imageWidth + x;
+	imageCompressed[color].push_back(address);
+	image[address] = intToColor(color);
 	cout << "color " << color << ' ' << imageCompressed[color].size() << ' ';
 	cout << "addr" << x << ' ' << y << endl;
 }
 
-int Paint::loadImage(string name)
+int Paint::loadImage()
 {
-	ifstream ifs (name);
+	ifstream ifs (inFilename);
 
 	if (ifs.get() != 'P') return 1;
 	if (ifs.get() != '3') return 1;
@@ -51,7 +68,7 @@ int Paint::loadImage(string name)
 	ifs >> imageWidth >> imageHeight;
 	//cout << imageWidth << ' ' << imageHeight << endl;
 
-	ifs >> bitsPerColor;
+	ifs >> maxColor;
 
 	int index = 0;
 	unsigned int r, g, b;
@@ -77,4 +94,30 @@ int Paint::loadImage(string name)
 		index++;
 	}
 	cout << "image loaded" << endl;
+	ifs.close();
+}
+
+int Paint::saveImage()
+{
+	ofstream ofs (outFilename);
+
+	ofs << "P3\n";
+	ofs << imageWidth << ' ' << imageHeight << '\n';
+	ofs << maxColor << '\n';
+
+	int x = 0;
+	for (Color triplet: image) {
+		ofs << triplet.r << ' '
+			<< triplet.g << ' '
+			<< triplet.b << '\t';
+
+		if (x == imageWidth - 1) {
+			ofs << '\n';
+			x = 0;
+		} else x++;
+	}
+	
+	ofs.close();
+
+	return 0;
 }
