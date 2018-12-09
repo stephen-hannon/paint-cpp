@@ -1,4 +1,3 @@
-
 CMP = g++ -std=c++11
 CLASS = paint
 MAIN = paintmain
@@ -14,6 +13,5 @@ $(MAIN).o: $(MAIN).cpp $(CLASS).h
 	$(CMP) -c $(MAIN).cpp -o $(MAIN).o 
 
 clean:
-	# rm *.o
-	rm $(EXEC)
+	rm $(EXEC) $(CLASS).o $(MAIN).o
 
