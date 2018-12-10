@@ -1,4 +1,6 @@
-// paintmain.cpp
+// Stephen Hannon and Julius Boateng
+// Lab 12
+// project.cpp
 
 #include <iostream>
 using namespace std;
@@ -13,21 +15,26 @@ void drawImage(Paint &paint, int scale, int imageWidth);
 int main(int argc, char *argv[])
 {
 	if (argc == 2 || argc == 3) {
-		const int width = 800, height = 500;
+		const int width = 1200, height = 700;
 		char c;
 		int event;
 		Paint paint;
 
 		paint.setInFilename(argv[1]);
+		// If the second argument is not given, use the first as
+		// outFilename
 		paint.setOutFilename(argv[(argc == 3) ? 2 : 1]);
-		paint.loadImage();
+
+		bool loadStatus = paint.loadImage();
+		if (loadStatus != 0) {
+			cout << "Error reading file " << argv[1] << endl;
+			return 1;
+		}
 
 		int imageWidth = paint.getImageWidth();
 		int imageHeight = paint.getImageHeight();
 
-		char font[] = "12x24";
-		char text[] = "hello world";
-		int scale = 5;
+		int scale = 5; // Size of the square for an image pixel
 		int color = 7; // white
 		bool mousedown = false;
 		int lastx = -1, lasty = -1;
@@ -38,21 +45,16 @@ int main(int argc, char *argv[])
 
 		while (true) {
 			event = gfx_event_waiting();
-			if (!event) continue;
+			// If there's no event waiting, try again
+			if (event == 0) continue;
 
 			c = gfx_wait();
 			gfx_flush();
-			cout << c << event << endl;
 
-			gfx_color(255, 255, 255);
-			gfx_text(100, 50, text);
 			setColor(paint, color);
 
-			c = gfx_wait();
-			gfx_flush();
-				
-			if (event == 3) mousedown = true;
-			if (event == 4) mousedown = false;
+			if (event == 3) mousedown = true; // mousedown
+			if (event == 4) mousedown = false; // mouseup
 			if (event == 5 && mousedown) { // mousemove
 				drawPixel(paint, color, scale, imageWidth, imageHeight, lastx, lasty);
 			}
@@ -63,8 +65,6 @@ int main(int argc, char *argv[])
 				paint.saveImage();
 			} else if (c >= '0' && c <= '7') {
 				color = c - '0';
-				//setColor(color);
-				cout << "color " << c << endl;
 			} else if (c == '='){
 				if (scale < 10){
 					scale = scale + 1;
@@ -91,9 +91,13 @@ int main(int argc, char *argv[])
 
 void drawPixel(Paint &paint, int color, int scale, int imageWidth, int imageHeight, int &lastx, int &lasty)
 {
-	int x = gfx_xpos() / scale, y = gfx_ypos() / scale;
+	int x = gfx_xpos() / scale,
+		y = gfx_ypos() / scale;
+
+	// Only draw if the point is within the bounds and it isn't
+	// so close to the previous one that it is the same pixel
 	if (x < imageWidth && y < imageHeight && (x != lastx || y != lasty)) {
-		paint.addPoint(x, y, color, 1);
+		paint.addPoint(x, y, color);
 		gfx_fill_rectangle(x * scale, y * scale, scale, scale);
 
 		lastx = x;
@@ -116,12 +120,44 @@ void drawImage(Paint &paint, int scale, int imageWidth)
 	for (int i = 0; i < 8; i++) {
 		setColor(paint, i);
 
-		cout << "color " << i << endl;
 		for (int index: paint.getCompressedColors(i)) {
 			int x = scale * (index % imageWidth),
 				y = scale * (index / imageWidth);
 			gfx_fill_rectangle(x, y, scale, scale);
-			if (index > imageWidth*imageWidth) cout << x << ' ' << y << endl;
 		}
+	}
+
+	vector<string> menu = {
+		"Click/drag to draw",
+		"",
+		"Commands:",
+		"q    Quit",
+		"s    Save",
+		"-    Zoom out",
+		"+    Zoom in",
+		"",
+		"Colors:",
+		"0    Black",
+		"1    Blue",
+		"2    Green",
+		"3    Cyan",
+		"4    Red",
+		"5    Magenta",
+		"6    Yellow",
+		"7    White"
+	};
+	int width = gfx_windowwidth();
+	int menuX = width - 150;
+	int menuY = 80;
+
+	gfx_color(255, 255, 255);
+	gfx_changefont((char*)"12x24");
+	gfx_text(menuX, menuY, "Paint 0.1");
+	menuY += 30;
+
+	gfx_changefont((char*)"fixed");
+	for (string item: menu) {
+		gfx_text(menuX, menuY, item.c_str());
+		menuY += 15;
 	}
 }

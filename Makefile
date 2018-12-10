@@ -1,6 +1,6 @@
 CMP = g++ -std=c++11
 CLASS = paint
-MAIN = paintmain
+MAIN = project
 EXEC = paint
 
 $(EXEC): $(CLASS).o $(MAIN).o

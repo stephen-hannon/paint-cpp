@@ -1,7 +1,7 @@
+// Stephen Hannon and Julius Boateng
+// Lab 12
 // paint.cpp
-#include <iostream>
 #include <fstream>
-#include <cstdint>
 #include <string>
 #include <vector>
 #include <array>
@@ -40,6 +40,8 @@ vector<int> Paint::getCompressedColors(int color)
 	return imageCompressed[color];
 }
 
+// Convert an integer with a color represented as bits
+// like 5 (101) --> {255, 0, 255}
 Color Paint::intToColor(unsigned int color)
 {
 	unsigned int r = 255 * (color >> 2);
@@ -49,26 +51,28 @@ Color Paint::intToColor(unsigned int color)
 	return {r, g, b};
 }
 
-void Paint::addPoint(int x, int y, int color, int size)
+void Paint::addPoint(int x, int y, int color)
 {
 	int address = y * imageWidth + x;
 	imageCompressed[color].push_back(address);
 	image[address] = intToColor(color);
-	cout << "color " << color << ' ' << imageCompressed[color].size() << ' ';
-	cout << "addr" << x << ' ' << y << endl;
 }
 
 int Paint::loadImage()
 {
-	ifstream ifs (inFilename);
+	ifstream ifs;
+
+	ifs.open(inFilename);
+
+	if (!ifs) return 1;
 
 	if (ifs.get() != 'P') return 1;
 	if (ifs.get() != '3') return 1;
 
 	ifs >> imageWidth >> imageHeight;
-	//cout << imageWidth << ' ' << imageHeight << endl;
 
 	ifs >> maxColor;
+	if (maxColor != 255) return 1;
 
 	int index = 0;
 	unsigned int r, g, b;
@@ -77,24 +81,26 @@ int Paint::loadImage()
 	while (ifs.peek() != EOF) {
 		ifs >> r >> g >> b;
 
+		// Pack the compressed color data into a 3-bit number
+		// for easy storage
 		rc = r >> 7;
 		gc = g >> 7;
 		bc = b >> 7;
 		compColor = rc;
 		compColor = (compColor << 1) | gc;
 		compColor = (compColor << 1) | bc;
-		//cout << compColor << endl;
 		
 		imageCompressed[compColor].push_back(index);
 
 		Color triplet = {r, g, b};
 		image.push_back(triplet);
-		//cout << r << ' ' << g << ' ' << b << endl;
 		ifs >> ws;
 		index++;
 	}
-	cout << "image loaded" << endl;
+
 	ifs.close();
+
+	return 0;
 }
 
 int Paint::saveImage()

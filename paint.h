@@ -1,4 +1,6 @@
-#include <cstdint>
+// Stephen Hannon and Julius Boateng
+// Lab 12
+// paint.h
 #include <string>
 #include <vector>
 #include <array>
@@ -8,10 +10,6 @@ struct Color {
 	unsigned int r;
 	unsigned int g;
 	unsigned int b;
-};
-struct Point {
-	unsigned int x;
-	unsigned int y;
 };
 
 class Paint {
@@ -26,7 +24,7 @@ class Paint {
 		Color getColor(int x, int y);
 		vector<int> getCompressedColors(int color);
 		Color intToColor(unsigned int color);
-		void addPoint(int x, int y, int color, int size);
+		void addPoint(int x, int y, int color);
 		int loadImage();
 		int saveImage();
 		
